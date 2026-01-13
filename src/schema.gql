@@ -2,6 +2,12 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Todo {
+  id: Float!
+  description: String!
+  done: Boolean!
+}
+
 type Query {
   """A simple hello world query"""
   hello: String!
@@ -14,4 +20,10 @@ type Query {
 
   """Devolver numero aleatorio entero entre 0 y el maximo que se envie"""
   randomFromZeroToNumber(max: Int!): Int!
+
+  """Devolver todos los todo"""
+  todos: [Todo!]!
+
+  """Devolver un todo por su ID"""
+  todoById(id: Int!): Todo!
 }
