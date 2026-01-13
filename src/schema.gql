@@ -8,4 +8,10 @@ type Query {
 
   """Devolver numero aleatorios"""
   random: Float!
+
+  """Devolver numero aleatorio entero entre 0 y 10"""
+  randomFromZeroTo10: Int!
+
+  """Devolver numero aleatorio entero entre 0 y el maximo que se envie"""
+  randomFromZeroToNumber(max: Int!): Int!
 }
