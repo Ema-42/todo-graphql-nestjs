@@ -34,8 +34,8 @@ export class UsersService {
   }
 
   async findAll(roles: ValidRoles[]): Promise<User[]> {
-    if (roles.length === 0) return this.usersRepository.find();
-    console.log('Roles en el service');
+    if (roles.length === 0)
+      return this.usersRepository.find({ relations: { lastUpdatedBy: true } });
     return this.usersRepository
       .createQueryBuilder()
       .andWhere('ARRAY[roles] && ARRAY[:...roles]')
@@ -52,12 +52,28 @@ export class UsersService {
     }
   }
 
-  update(id: number, updateUserInput: UpdateUserInput) {
-    return `This action updates a #${id} user`;
+  async update(
+    id: string,
+    updateUserInput: UpdateUserInput,
+    userAdmin: User,
+  ) /*  : Promise<User>  */ {
+    try {
+      let userToUpdate = await this.usersRepository.preload({
+        ...updateUserInput,
+        id,
+      });
+      userToUpdate.lastUpdatedBy = userAdmin;
+      return await this.usersRepository.save(userToUpdate);
+    } catch (error) {
+      this.handleDBError(error);
+    }
   }
 
-  block(id: string): Promise<User> {
-    throw new Error('Block aún no esta implementado.');
+  async block(id: string, userAdmin: User): Promise<User> {
+    const userToBlock = await this.findOneById(id);
+    userToBlock.isActive = false;
+    userToBlock.lastUpdatedBy = userAdmin;
+    return await this.usersRepository.save(userToBlock);
   }
 
   private handleDBError(error: any): never {
